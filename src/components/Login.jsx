@@ -1,20 +1,93 @@
 import React, { useRef, useState } from "react";
 import Header from "./Header";
 import { checkValidDate } from "../utils/validate";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import { auth } from "../utils/firebase";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addUser } from "../utils/userSlice";
 
 const Login = () => {
   const [isSignInForm, setIsSignInForm] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
 
-  const name=useRef(null);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const name = useRef(null);
   const email = useRef(null);
   const password = useRef(null);
 
   const handleButtonClick = () => {
-    // validate email & password
-    const message = checkValidDate(name.current.value, email.current.value, password.current.value);
+    const nameValue = name.current ? name.current.value : null;
+    const message = checkValidDate(
+      nameValue,
+      email.current?.value || "",
+      password.current?.value || ""
+    );
+
     setErrorMsg(message);
-    console.log(password.current.value)
+    if (message) return;
+
+    if (!isSignInForm) {
+      // Sign Up
+      createUserWithEmailAndPassword(
+        auth,
+        email.current.value,
+        password.current.value
+      )
+        .then((userCredentials) => {
+          const user = userCredentials.user;
+          updateProfile(user, {
+            displayName: name.current.value,
+            photoURL: "https://avatars.githubusercontent.com/u/175523176?v=4",
+          })
+            .then(() => {
+              // Profile updated
+              const { uid, email, displayName, photoURL } = auth.currentUser;
+              dispatch(
+                addUser({
+                  uid: uid,
+                  email: email,
+                  displayName: displayName,
+                  photoURL: photoURL,
+                })
+              );
+              navigate("/browse");
+            })
+            .catch((err) => {
+              setErrorMsg(err.message);
+            });
+          console.log(user);
+          navigate("/browse");
+        })
+        .catch((err) => {
+          const errorCode = err.code;
+          const errorMsg = err.message;
+          setErrorMsg(errorCode + "-" + errorMsg);
+        });
+    } else {
+      // Sign In using signInWithEmailAndPassword instead of signInWithCredential
+      signInWithEmailAndPassword(
+        auth,
+        email.current.value,
+        password.current.value
+      )
+        .then((userCredentials) => {
+          const user = userCredentials.user;
+          console.log(user);
+          navigate("/browse");
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMsg = error.message;
+          setErrorMsg(errorCode + "-" + errorMsg);
+        });
+    }
   };
 
   const toggleSignInForm = () => {
@@ -39,7 +112,8 @@ const Login = () => {
           {isSignInForm ? "Sign In" : "Sign Up"}
         </h1>
         {!isSignInForm && (
-          <input ref={name}
+          <input
+            ref={name}
             type="text"
             placeholder="Full Name"
             className="p-2 my-2 w-full bg-gray-700 rounded-md"
@@ -60,7 +134,7 @@ const Login = () => {
         <p className="py-2 font-bold text-1xl text-red-500">{errorMsg}</p>
         <button
           onClick={handleButtonClick}
-          className=" w-full bg-red-500 text-white p-2 my-2 rounded"
+          className="w-full bg-red-500 text-white p-2 my-2 rounded"
         >
           {isSignInForm ? "Sign In" : "Sign Up"}
         </button>
