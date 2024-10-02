@@ -1,37 +1,21 @@
-import React, { useEffect } from "react";
-import Login from "./Login";
 import Browse from "./Browse";
+import ErrorPage from "./ErrorPage"; // import the error page
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../utils/firebase";
-import { useDispatch } from "react-redux";
-import { addUser, removeUser } from "../utils/userSlice";
+import Login from "./Login";
 
 const Body = () => {
-  const dispatch = useDispatch();
-
   const router = createBrowserRouter([
     {
       path: "/",
       element: <Login />,
+      errorElement: <ErrorPage />, // attach the error page
     },
     {
       path: "/browse",
       element: <Browse />,
+      errorElement: <ErrorPage />, // attach the error page
     },
   ]);
-
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const { uid, email, displayName,photoURL } = user;
-        dispatch(addUser({ uid: uid, email: email, displayName: displayName ,photoURL:photoURL}));
-      } else {
-        // user is signed out
-        dispatch(removeUser());
-      }
-    });
-  }, []);
 
   return (
     <div>

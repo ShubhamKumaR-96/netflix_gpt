@@ -57,13 +57,11 @@ const Login = () => {
                   photoURL: photoURL,
                 })
               );
-              navigate("/browse");
             })
             .catch((err) => {
               setErrorMsg(err.message);
             });
           console.log(user);
-          navigate("/browse");
         })
         .catch((err) => {
           const errorCode = err.code;
@@ -79,8 +77,6 @@ const Login = () => {
       )
         .then((userCredentials) => {
           const user = userCredentials.user;
-          console.log(user);
-          navigate("/browse");
         })
         .catch((error) => {
           const errorCode = error.code;
