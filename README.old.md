@@ -17,6 +17,17 @@
 - Fetch from TMDB-Movies
 - BugFix: Sign up user displayName and profile picture update
 - BugFix: if the user is not logged in Redirect /browse to login Page and vice-versa
+- Unsubscribed to the onAuthStateChanged callback
+- Add hardCoded values for to the constants file
+- Registered for TMDB APP & Get access token
+- Get data fromTMDB now playing movies list api
+- Custom hooks for nowPlayingMovies 
+- Create MovieSlice
+- Update Store with movies data
+- Planing for Main Container or Secondary Conatiner
+- Fetch data for trailer video
+- Update Store with trailer video data
+- Embedded the youtube video and make it auto play
 - 
 
 # Features
