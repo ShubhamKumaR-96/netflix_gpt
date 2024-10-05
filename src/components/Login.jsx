@@ -16,7 +16,6 @@ const Login = () => {
   const [isSignInForm, setIsSignInForm] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
 
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const name = useRef(null);
@@ -62,7 +61,6 @@ const Login = () => {
             .catch((err) => {
               setErrorMsg(err.message);
             });
-          console.log(user);
         })
         .catch((err) => {
           const errorCode = err.code;
